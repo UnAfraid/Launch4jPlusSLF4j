@@ -1,0 +1,74 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'edu.sc.seis.launch4j'
+	
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+	
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile(group: 'org.slf4j', name: 'slf4j-api', version: '1.7.12')
+	compile(group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.3')
+	compile(group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.3')
+}
+
+eclipse {
+	project {
+		natures('org.springsource.ide.eclipse.gradle.core.nature')
+	}
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '3.0'
+}
+
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
+
+
+def generalManifest = manifest {
+	attributes(
+		'Built-By': System.getProperty('user.name'),
+		'Implementation-URL': 'https://github.com/UnAfraid/Launch4jPlusSLF4j',
+		'Main-Class': 'com.github.unafraid.editor.ui.Main',
+	)
+}
+
+jar {
+	configurations.compile.collect {
+        from(zipTree(it)) {
+            exclude('META-INF/NOTICE')
+            exclude('META-INF/LICENSE')
+            exclude('META-INF/DEPENDENCIES')
+            exclude('META-INF/ECLIPSE*')
+            exclude('META-INF/eclipse.*')
+            exclude('META-INF/maven/')
+            exclude('*.html')
+        }
+    }
+	manifest {
+		from(generalManifest)
+	}
+}
+
+
+launch4j {
+    copyConfigurable = project.tasks.jar.outputs.files
+    mainClassName = "com.github.unafraid.editor.ui.Main"
+}
+
+buildscript {
+    repositories {
+        maven {
+	      url 'https://plugins.gradle.org/m2/'
+	    }
+    }
+
+    dependencies {
+        classpath 'gradle.plugin.edu.sc.seis.gradle:launch4j:1.5.1'
+    }
+}
