@@ -24,8 +24,6 @@ import org.apache.logging.log4j.core.layout.PatternLayout;
  */
 @Plugin(name = "GUILogger", category = "Core", elementType = "appender", printObject = true)
 public final class GUILogger extends AbstractAppender {
-	private static final long serialVersionUID = 6223410932674438595L;
-
 	private static Consumer<String> ON_MESSAGE;
 	private final Queue<String> _messages = new ConcurrentLinkedQueue<>();
 

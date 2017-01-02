@@ -3,23 +3,19 @@
 .project
 .settings
 .metadata
-bin/
-/.recommenders/
+/bin
+/.recommenders
 
 # Idea
 *.iml
-/.idea/
+/.idea
 
 # Gradle
-/.gradle/
-*/build/
+/.gradle
+/build
 
 
 .DS_Store
 .directory
 *.log
-*/log
-dist/data/applications
-
-/log/
-/build/
+/log

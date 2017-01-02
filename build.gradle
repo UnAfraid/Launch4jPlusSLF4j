@@ -10,9 +10,9 @@ repositories {
 }
 
 dependencies {
-	compile(group: 'org.slf4j', name: 'slf4j-api', version: '1.7.12')
-	compile(group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.3')
-	compile(group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.3')
+	compile(group: 'org.slf4j', name: 'slf4j-api', version: '1.7.22')
+	compile(group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.7')
+	compile(group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.7')
 }
 
 eclipse {
@@ -69,6 +69,6 @@ buildscript {
     }
 
     dependencies {
-        classpath 'gradle.plugin.edu.sc.seis.gradle:launch4j:1.5.1'
+        classpath 'gradle.plugin.edu.sc.seis.gradle:launch4j:2.1.0'
     }
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration packages="com.github.unafraid.editor.ui.util.logging" status="INFO" shutdownHook="disable">
+<Configuration packages="com.github.unafraid.editor.ui.util.logging" status="INFO" shutdownHook="disable" monitorInterval="60">
 	<Appenders>
 		<Console name="Console" target="SYSTEM_OUT">
 			<PatternLayout pattern="[%date{HH:mm:ss}] [%level] %logger{1}: %message%n" />
