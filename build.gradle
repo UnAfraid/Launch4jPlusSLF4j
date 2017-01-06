@@ -61,6 +61,6 @@ buildscript {
     dependencies {
         classpath 'gradle.plugin.edu.sc.seis.gradle:launch4j:2.1.0'
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
-        classpath "de.sebastianboegl.gradle.plugins:shadow-log4j-transformer:1.0.1"
+        classpath "gradle.plugin.de.sebastianboegl.gradle.plugins:shadow-log4j-transformer:1.0.1"
     }
 }
