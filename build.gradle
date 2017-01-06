@@ -1,7 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'edu.sc.seis.launch4j'
-apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: "de.sebastianboegl.shadow.transformer.log4j"
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
@@ -45,10 +45,6 @@ jar {
     }
 }
 
-shadowJar {
-    transform(PluginsCacheFileTransformer.class)
-}
-
 launch4j {
     copyConfigurable = project.tasks.shadowJar.outputs.files
     jar = "lib/${project.tasks.shadowJar.archiveName}"
@@ -65,115 +61,6 @@ buildscript {
     dependencies {
         classpath 'gradle.plugin.edu.sc.seis.gradle:launch4j:2.1.0'
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
-        classpath(group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.7')
-    }
-}
-
-import com.github.jengelman.gradle.plugins.shadow.relocation.Relocator
-import org.apache.commons.io.IOUtils
-import org.apache.commons.io.output.ProxyOutputStream
-import org.apache.logging.log4j.core.config.plugins.processor.PluginCache
-import org.apache.logging.log4j.core.config.plugins.processor.PluginEntry
-import org.apache.tools.zip.ZipEntry
-import org.apache.tools.zip.ZipOutputStream
-
-import static org.apache.commons.io.output.ClosedOutputStream.CLOSED_OUTPUT_STREAM
-import static org.apache.logging.log4j.core.config.plugins.processor.PluginProcessor.PLUGIN_CACHE_FILE
-
-final class CloseShieldOutputStream extends ProxyOutputStream {
-
-    CloseShieldOutputStream(OutputStream out) {
-        super(out);
-    }
-
-    @Override
-    void close() throws IOException {
-        out.flush();
-        out = CLOSED_OUTPUT_STREAM;
-    }
-}
-
-class PluginsCacheFileTransformer implements com.github.jengelman.gradle.plugins.shadow.transformers.Transformer {
-
-    private final ArrayList<File> tempFiles = new ArrayList<File>();
-    private final List<Relocator> relocators = new ArrayList<Relocator>();
-
-    @Override
-    boolean canTransformResource(FileTreeElement fileTreeElement) {
-        return fileTreeElement != null && PLUGIN_CACHE_FILE.equals(fileTreeElement.relativePath.pathString);
-    }
-
-    @Override
-    void transform(String resource, InputStream is, List<Relocator> relocators) throws IOException {
-        final File tempFile = File.createTempFile("Log4j2Plugins", "dat");
-        FileOutputStream fos = new FileOutputStream(tempFile);
-        try {
-            IOUtils.copyLarge(is, fos);
-        } finally {
-            IOUtils.closeQuietly(fos);
-        }
-        tempFiles.add(tempFile);
-
-        if (relocators != null) {
-            relocators.addAll(relocators);
-        }
-    }
-
-    @Override
-    boolean hasTransformedResource() {
-        return tempFiles.size() > 1 || (tempFiles.size() > 0 && relocators.size() > 0);
-    }
-
-    @Override
-    void modifyOutputStream(ZipOutputStream jos) throws IOException {
-        try {
-            PluginCache aggregator = new PluginCache();
-            aggregator.loadCacheFiles(getUrls());
-
-            relocatePlugin(aggregator, relocators);
-
-            jos.putNextEntry(new ZipEntry(PLUGIN_CACHE_FILE));
-            aggregator.writeCache(new CloseShieldOutputStream(jos));
-        } finally {
-            for (File tempFile : tempFiles) {
-                //noinspection ResultOfMethodCallIgnored
-                tempFile.delete();
-            }
-        }
-    }
-
-    void relocatePlugin(PluginCache aggregator, List<Relocator> relocators) {
-        for (Map.Entry<String, Map<String, PluginEntry>> categoryEntry : aggregator.getAllCategories().entrySet()) {
-            for (Map.Entry<String, PluginEntry> pluginMapEntry : categoryEntry.getValue().entrySet()) {
-                PluginEntry pluginEntry = pluginMapEntry.getValue();
-                String originalClassName = pluginEntry.getClassName();
-
-                Relocator matchingRelocator = findFirstMatchingRelocator(originalClassName, relocators);
-
-                if (matchingRelocator != null) {
-                    String newClassName = matchingRelocator.relocateClass(originalClassName);
-                    pluginEntry.setClassName(newClassName);
-                }
-            }
-        }
-    }
-
-    private Relocator findFirstMatchingRelocator(String originalClassName, List<Relocator> relocators) {
-        for (Relocator relocator : relocators) {
-            if (relocator.canRelocateClass(originalClassName)) {
-                return relocator;
-            }
-        }
-        return null;
-    }
-
-
-    private Enumeration<URL> getUrls() throws MalformedURLException {
-        List<URL> urls = new ArrayList<URL>();
-        for (File tempFile : tempFiles) {
-            final URL url = tempFile.toURI().toURL();
-            urls.add(url);
-        }
-        return Collections.enumeration(urls);
+        classpath "de.sebastianboegl.gradle.plugins:shadow-log4j-transformer:1.0.1"
     }
 }
