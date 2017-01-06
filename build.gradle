@@ -1,41 +1,41 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'edu.sc.seis.launch4j'
+apply plugin: "java"
+apply plugin: "eclipse"
+apply plugin: "edu.sc.seis.launch4j"
 apply plugin: "de.sebastianboegl.shadow.transformer.log4j"
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compile(group: 'org.slf4j', name: 'slf4j-api', version: '1.7.22')
-    compile(group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.7')
-    compile(group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.7')
+    compile(group: "org.slf4j", name: "slf4j-api", version: "1.7.22")
+    compile(group: "org.apache.logging.log4j", name: "log4j-slf4j-impl", version: "2.7")
+    compile(group: "org.apache.logging.log4j", name: "log4j-core", version: "2.7")
 }
 
 eclipse {
     project {
-        natures('org.springsource.ide.eclipse.gradle.core.nature')
+        natures("org.springsource.ide.eclipse.gradle.core.nature")
     }
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '3.0'
+    gradleVersion = "3.0"
 }
 
 tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
+    options.encoding = "UTF-8"
 }
 
 
 def generalManifest = manifest {
     attributes(
-            'Built-By': System.getProperty('user.name'),
-            'Implementation-URL': 'https://github.com/UnAfraid/Launch4jPlusSLF4j',
-            'Main-Class': 'com.github.unafraid.editor.ui.Main',
+            "Built-By": System.getProperty("user.name"),
+            "Implementation-URL": "https://github.com/UnAfraid/Launch4jPlusSLF4j",
+            "Main-Class": "com.github.unafraid.editor.ui.Main",
     )
 }
 
@@ -54,13 +54,13 @@ launch4j {
 buildscript {
     repositories {
         maven {
-            url 'https://plugins.gradle.org/m2/'
+            url "https://plugins.gradle.org/m2/"
         }
     }
 
     dependencies {
-        classpath 'gradle.plugin.edu.sc.seis.gradle:launch4j:2.1.0'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
+        classpath "gradle.plugin.edu.sc.seis.gradle:launch4j:2.1.0"
+        classpath "com.github.jengelman.gradle.plugins:shadow:1.2.4"
         classpath "gradle.plugin.de.sebastianboegl.gradle.plugins:shadow-log4j-transformer:1.0.1"
     }
 }
